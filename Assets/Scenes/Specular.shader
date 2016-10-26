@@ -6,6 +6,8 @@ Shader "Specular"
 	Properties
 	{
 		_Color("Color", Color) = (1.0, 1.0, 1.0, 1.0)
+		_SpecularColor("SpecularColor", Color) = (1.0, 1.0, 1.0, 1.0)
+		_Shininess("Shininess", float) = 10
 	}
 
 	SubShader
@@ -27,7 +29,9 @@ Shader "Specular"
 
 			//variables
 			uniform float4 _Color;
-			
+			uniform float4 _SpecularColor;
+			uniform float _Shininess;
+
 			//unity variables
 			uniform float4 _LightColor0;
 
@@ -51,18 +55,9 @@ Shader "Specular"
 			{
 				vertexOut output;
 
-				float3 normalDir = normalize(mul(float4(v.normal, 0.0), unity_WorldToObject).xyz);
-				float3 lightDir;
-				float3 attenuation = 1.0;
-				
-				//calculate the light
-				lightDir = normalize(_WorldSpaceLightPos0.xyz);
-				float3 diffuseReflection = attenuation * _LightColor0.xyz * max(0.0, dot(normalDir, lightDir));
-				//Adding in the ambient effect
-				float3 lightFinal = diffuseReflection + UNITY_LIGHTMODEL_AMBIENT.xyz;
-
 				output.color = float4(lightFinal * _Color.rgb, 1.0);
 				output.position = mul(UNITY_MATRIX_MVP, v.vertex);
+
 				return output;
 			}
 
