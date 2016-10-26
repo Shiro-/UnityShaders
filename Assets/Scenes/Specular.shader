@@ -1,5 +1,5 @@
 ﻿/*
-Reference to unitycookie for great tutorials on shader development
+Reference to unitycookie/cgcookie for great tutorials on shader development
 */
 
 // Upgrade NOTE: replaced '_Object2World' with 'unity_ObjectToWorld'
@@ -71,7 +71,7 @@ Shader "Specular"
 				//calculate our lighting
 				lightDir = normalize(_WorldSpaceLightPos0.xyz);
 				float3 diffuseReflection = attenuation * _LightColor0.xyz * max(0.0, dot(normalDir, lightDir));
-				float3 specularReflection = attenuation * _SpecularColor.rgb * max(0.0, dot(normalDir, lightDir)) * pow(max(0.0, dot(reflect(-lightDir, normalDir), viewDir)), _Shininess);
+				float3 specularReflection = attenuation * _LightColor0.xyz * _SpecularColor.rgb * max(0.0, dot(normalDir, lightDir)) * pow(max(0.0, dot(reflect(-lightDir, normalDir), viewDir)), _Shininess);
 				float3 lightFinal = diffuseReflection + specularReflection + UNITY_LIGHTMODEL_AMBIENT;
 
 				output.color = float4(lightFinal * _Color.rgb, 1.0);

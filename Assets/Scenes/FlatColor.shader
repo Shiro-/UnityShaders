@@ -1,5 +1,5 @@
 ﻿/*
-Reference to unitycookie for great tutorials on shader development
+Reference to unitycookie/cgcookie for great tutorials on shader development
 */
 
 //Name of the shader
