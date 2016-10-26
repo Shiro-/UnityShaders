@@ -1,4 +1,8 @@
-﻿//Name of the shader
+﻿/*
+Reference to unitycookie for great tutorials on shader development
+*/
+
+//Name of the shader
 Shader "FlatColor" 
 {
 	//This will create a properties box within unity

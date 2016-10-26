@@ -1,4 +1,8 @@
-﻿// Upgrade NOTE: replaced '_World2Object' with 'unity_WorldToObject'
+﻿/*
+Reference to unitycookie for great tutorials on shader development
+*/
+
+// Upgrade NOTE: replaced '_World2Object' with 'unity_WorldToObject'
 //Name of the shader
 Shader "Lambert"
 {
