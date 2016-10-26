@@ -55,7 +55,13 @@ Shader "Specular"
 			{
 				vertexOut output;
 
-				output.color = float4(lightFinal * _Color.rgb, 1.0);
+				//vectors
+				float3 normalDir = normalize(mul(float4(v.normal, 0.0), unity_WorldToObject).xyz);
+				float3 viewDir = normalize(float3(float4(_WorldSpaceCameraPos.xyz, 1.0) - mul(UNITY_MATRIX_MVP, v.vertex).xyz)); 
+				//float3 lightDir = ;
+				float attenuation = 1.0;
+
+				output.color = float4(viewDir, 1.0);
 				output.position = mul(UNITY_MATRIX_MVP, v.vertex);
 
 				return output;
