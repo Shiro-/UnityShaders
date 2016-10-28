@@ -47,7 +47,7 @@ Shader "RimLighting"
 					float3 normal : NORMAL;
 				};
 
-				struct vertOut
+				struct vertexOut
 				{
 					float4 position : SV_POSITION;
 					float4 positionWorld : TEXCOORD0;
@@ -55,7 +55,37 @@ Shader "RimLighting"
 				};
 
 				//Vertex function
+				vertexOut vert(vertexIn v)
+				{
+					vertexOut o;
 
+					o.positionWorld = mul(unity_ObjectToWorld, v.vertex);
+					o.normalDirection = normalize(mul(float4(v.normal, 0.0), unity_WorldToObject).xyz);
+					o.position = mul(UNITY_MATRIX_MVP, v.vertex);
+
+					return o;
+				}
+
+				//Fragment funciton
+				float4 frag(vertexOut i) : COLOR
+				{
+					float3 normalDir = i.normalDirection;
+					float3 viewDirection = normalize(_WorldSpaceCameraPos.xyz - i.positionWorld.xyz);
+					float3 lightDirection = normalize(_WorldSpaceLightPos0.xyz);
+					float attenuation = 1.0;
+
+					//Lighting
+					float3 diffuseReflection = attenuation * _LightColor0.xyz * saturate(dot(normalDir, lightDirection));
+					float3 specularReflection = attenuation * _LightColor0.xyz * saturate(dot(normalDir, lightDirection)) * pow(saturate(dot(reflect(-lightDirection, normalDir), viewDirection)), _Shininess);
+
+					//Rim
+					float rim = 1.0 - saturate(dot(normalize(viewDirection), normalDir));
+					float3 rimLighting = attenuation * _LightColor0.xyz * _RimColor * saturate(dot(normalDir, lightDirection)) * pow(rim, _RimPower);
+
+					float3 lightFinal = rimLighting + diffuseReflection + specularReflection;
+
+					return float4(lightFinal * _Color.xyz, 1.0);
+				}
 				ENDCG
 			}
 		}
