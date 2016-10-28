@@ -82,7 +82,7 @@ Shader "RimLighting"
 					float rim = 1.0 - saturate(dot(normalize(viewDirection), normalDir));
 					float3 rimLighting = attenuation * _LightColor0.xyz * _RimColor * saturate(dot(normalDir, lightDirection)) * pow(rim, _RimPower);
 
-					float3 lightFinal = rimLighting + diffuseReflection + specularReflection;
+					float3 lightFinal = rimLighting + diffuseReflection + specularReflection + UNITY_LIGHTMODEL_AMBIENT.rgb;
 
 					return float4(lightFinal * _Color.xyz, 1.0);
 				}
