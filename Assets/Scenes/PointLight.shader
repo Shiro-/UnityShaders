@@ -71,8 +71,24 @@ Shader "PointLight"
 				{
 					float3 normalDir = i.normalDirection;
 					float3 viewDirection = normalize(_WorldSpaceCameraPos.xyz - i.positionWorld.xyz);
-					float3 lightDirection = normalize(_WorldSpaceLightPos0.xyz);
-					float attenuation = 1.0;
+					float3 lightDirection;
+					float attenuation;
+
+					//Check for directional light or point lights
+					//Computation heavy because if statements
+					if (_WorldSpaceLightPos0.w == 0.0)
+					{
+						//Directional lights
+						attenuation = 1.0;
+						lightDirection = normalize(_WorldSpaceLightPos0.xyz);
+					}
+					else
+					{
+						float3 fragToLightSource = _WorldSpaceLightPos0.xyz - i.positionWorld.xyz;
+						float distance = length(fragToLightSource);
+						attenuation = 1.0 / distance;
+						lightDirection = normalize(fragToLightSource);
+					}
 
 					//Lighting
 					float3 diffuseReflection = attenuation * _LightColor0.xyz * saturate(dot(normalDir, lightDirection));
@@ -89,76 +105,93 @@ Shader "PointLight"
 				ENDCG
 			}
 
-				//Passes are basically render passes
-				Pass
-				{
-					Tags
+		//Second Pass
+					Pass
 					{
-						"LightMode" = "ForwardAdd"
-					}
+						Tags
+						{
+							"LightMode" = "ForwardAdd"
+						}
 
-					Blend One One
+						//Blend Mode
+						Blend One One
 
-					CGPROGRAM
-					#pragma vertex vert
-					#pragma fragment frag
+						CGPROGRAM
+						#pragma vertex vert
+						#pragma fragment frag
 
-					//User Variables
-					uniform float4 _Color;
-					uniform float4 _SpecularColor;
-					uniform float4 _RimColor;
-					uniform float _Shininess;
-					uniform float _RimPower;
+						//User Variables
+						uniform float4 _Color;
+						uniform float4 _SpecularColor;
+						uniform float4 _RimColor;
+						uniform float _Shininess;
+						uniform float _RimPower;
 
-					//Unity Variables
-					uniform float4 _LightColor0;
+						//Unity Variables
+						uniform float4 _LightColor0;
 
-					//Structs
-					struct vertexIn
-					{
-						float4 vertex : POSITION;
-						float3 normal : NORMAL;
-					};
+						//Structs
+						struct vertexIn
+						{
+							float4 vertex : POSITION;
+							float3 normal : NORMAL;
+						};
 
-					struct vertexOut
-					{
-						float4 position : SV_POSITION;
-						float4 positionWorld : TEXCOORD0;
-						float3 normalDirection : TEXCOORD1;
-					};
+						struct vertexOut
+						{
+							float4 position : SV_POSITION;
+							float4 positionWorld : TEXCOORD0;
+							float3 normalDirection : TEXCOORD1;
+						};
 
-					//Vertex function
-					vertexOut vert(vertexIn v)
-					{
-						vertexOut o;
+						//Vertex function
+						vertexOut vert(vertexIn v)
+						{
+							vertexOut o;
+		
+							o.positionWorld = mul(unity_ObjectToWorld, v.vertex);
+							o.normalDirection = normalize(mul(float4(v.normal, 0.0), unity_WorldToObject).xyz);
+							o.position = mul(UNITY_MATRIX_MVP, v.vertex);
 
-						o.positionWorld = mul(unity_ObjectToWorld, v.vertex);
-						o.normalDirection = normalize(mul(float4(v.normal, 0.0), unity_WorldToObject).xyz);
-						o.position = mul(UNITY_MATRIX_MVP, v.vertex);
+							return o;
+						}
 
-						return o;
-					}
+						//Fragment funciton
+						float4 frag(vertexOut i) : COLOR
+						{
+							float3 normalDir = i.normalDirection;
+							float3 viewDirection = normalize(_WorldSpaceCameraPos.xyz - i.positionWorld.xyz);
+							float3 lightDirection;
+							float attenuation;
 
-					//Fragment funciton
-					float4 frag(vertexOut i) : COLOR
-					{
-						float3 normalDir = i.normalDirection;
-						float3 viewDirection = normalize(_WorldSpaceCameraPos.xyz - i.positionWorld.xyz);
-						float3 lightDirection = normalize(_WorldSpaceLightPos0.xyz);
-						float attenuation = 1.0;
+							//Check for directional light or point lights
+							if (_WorldSpaceLightPos0.w == 0.0)
+							{
+								//Directional lights
+								attenuation = 1.0;
+								lightDirection = normalize(_WorldSpaceLightPos0.xyz);
+							}
+							else
+							{
+								//Point Light
+								float3 fragToLightSource = _WorldSpaceLightPos0.xyz - i.positionWorld.xyz;
+								float distance = length(fragToLightSource);
+								attenuation = 1.0 / distance;
+								lightDirection = normalize(fragToLightSource);
+							}
 
-						//Lighting
-						float3 diffuseReflection = attenuation * _LightColor0.xyz * saturate(dot(normalDir, lightDirection));
-						float3 specularReflection = attenuation * _LightColor0.xyz * saturate(dot(normalDir, lightDirection)) * pow(saturate(dot(reflect(-lightDirection, normalDir), viewDirection)), _Shininess);
-	
-						//Rim
-						float rim = 1.0 - saturate(dot(normalize(viewDirection), normalDir));
-						float3 rimLighting = attenuation * _LightColor0.xyz * _RimColor * saturate(dot(normalDir, lightDirection)) * pow(rim, _RimPower);
+							//Lighting
+							float3 diffuseReflection = attenuation * _LightColor0.xyz * saturate(dot(normalDir, lightDirection));
+							float3 specularReflection = attenuation * _LightColor0.xyz * saturate(dot(normalDir, lightDirection)) * pow(saturate(dot(reflect(-lightDirection, normalDir), viewDirection)), _Shininess);
 
-						float3 lightFinal = rimLighting + diffuseReflection + specularReflection + UNITY_LIGHTMODEL_AMBIENT.rgb;
+							//Rim
+							float rim = 1.0 - saturate(dot(normalize(viewDirection), normalDir));
+							float3 rimLighting = attenuation * _LightColor0.xyz * _RimColor * saturate(dot(normalDir, lightDirection)) * pow(rim, _RimPower);
 
-						return float4(lightFinal * _Color.xyz, 1.0);
-					}
+							float3 lightFinal = rimLighting + diffuseReflection + specularReflection + UNITY_LIGHTMODEL_AMBIENT.rgb;
+
+							return float4(lightFinal * _Color.xyz, 1.0);
+						}
 					ENDCG
 				}
 		}
