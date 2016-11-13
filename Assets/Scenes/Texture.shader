@@ -69,6 +69,7 @@ Shader "Texture"
 					o.positionWorld = mul(unity_ObjectToWorld, v.vertex);
 					o.normalDirection = normalize(mul(float4(v.normal, 0.0), unity_WorldToObject).xyz);
 					o.position = mul(UNITY_MATRIX_MVP, v.vertex);
+					o.tex = v.texcoord;
 
 					return o;
 				}
