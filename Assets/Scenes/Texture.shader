@@ -79,18 +79,39 @@ Shader "Texture"
 				{
 					float3 normalDir = i.normalDirection;
 					float3 viewDirection = normalize(_WorldSpaceCameraPos.xyz - i.positionWorld.xyz);
-					float3 lightDirection = normalize(_WorldSpaceLightPos0.xyz);
-					float attenuation = 1.0;
+					
+					float3 lightDirection;
+					float attenuation;
+					//float3 lightDirection = normalize(_WorldSpaceLightPos0.xyz);
+					//float attenuation = 1.0;
+
+					//Directional Light
+					if (_WorldSpaceLightPos0.w == 0.0)
+					{
+						attenuation = 1.0;
+						lightDirection = normalize(_WorldSpaceLightPos0.xyz);
+					}
+					else
+					{
+						float3 fragToLightSource = _WorldSpaceLightPos.xyz - i.positionWorld.xyz;
+						float distance = length(fragToLightSource);
+						attenuation = 1.0 / distance;
+						lightDirection = normalize(fragToLightSource);
+					}
 
 					//Lighting
+					//float3 diffuseReflection = attenuation * _LightColor0.xyz * saturate(dot(normalDir, lightDirection));
+					//float3 specularReflection = attenuation * _LightColor0.xyz * saturate(dot(normalDir, lightDirection)) * pow(saturate(dot(reflect(-lightDirection, normalDir), viewDirection)), _Shininess);
 					float3 diffuseReflection = attenuation * _LightColor0.xyz * saturate(dot(normalDir, lightDirection));
-					float3 specularReflection = attenuation * _LightColor0.xyz * saturate(dot(normalDir, lightDirection)) * pow(saturate(dot(reflect(-lightDirection, normalDir), viewDirection)), _Shininess);
+					float3 specularReflection = diffuseReflection * _SpecColor.xyz * pow(saturate(dot(reflect(-lightDirection, normalDir), viewDirection)), _Shininess);
 
 					//Rim
-					float rim = 1.0 - saturate(dot(normalize(viewDirection), normalDir));
-					float3 rimLighting = attenuation * _LightColor0.xyz * _RimColor * saturate(dot(normalDir, lightDirection)) * pow(rim, _RimPower);
+					//float rim = 1.0 - saturate(dot(normalize(viewDirection), normalDir));
+					//float3 rimLighting = attenuation * _LightColor0.xyz * _RimColor * saturate(dot(normalDir, lightDirection)) * pow(rim, _RimPower);
+					float rim = 1.0 - saturate(dot(viewDirection, normalDir));
+					float3 rimLighting = saturate(dot(normalDir, lightDirection) * _RimColor.xyz * _LightColor.xyz * pow(rim, _RimPower));
 
-					float3 lightFinal = rimLighting + diffuseReflection + specularReflection + UNITY_LIGHTMODEL_AMBIENT.rgb;
+					float3 lightFinal = rimLighting + diffuseReflection + specularReflection + UNITY_LIGHTMODEL_AMBIENT.xyz;
 
 					return float4(lightFinal * _Color.xyz, 1.0);
 				}
