@@ -10,7 +10,8 @@ Shader "Texture"
 	//Properties box
 	Properties
 	{
-		_Color("Color", Color) = (1.0, 1.0, 1.0, 1.0)
+		_Color("Color Tint", Color) = (1.0, 1.0, 1.0, 1.0)
+		_MainTex ("Diffuse Texture", 2D) = "white" {}
 		_SpecularColor("SpecularColor", Color) = (1.0, 1.0, 1.0, 1.0)
 		_Shininess("Shininess", float) = 10
 		_RimColor("Rim Color", Color) = (1.0, 1.0, 1.0, 1.0)
@@ -37,6 +38,10 @@ Shader "Texture"
 				uniform float _Shininess;
 				uniform float _RimPower;
 
+				//For textures
+				uniform sampler2D _MainTex;
+				uniform float4 _MainTex_ST;
+
 				//Unity Variables
 				uniform float4 _LightColor0;
 
@@ -45,13 +50,15 @@ Shader "Texture"
 				{
 					float4 vertex : POSITION;
 					float3 normal : NORMAL;
+					float4 texcoord : TEXCOORD0;
 				};
 
 				struct vertexOut
 				{
 					float4 position : SV_POSITION;
-					float4 positionWorld : TEXCOORD0;
-					float3 normalDirection : TEXCOORD1;
+					float4 tex : TEXCOORD0;
+					float4 positionWorld : TEXCOORD1;
+					float3 normalDirection : TEXCOORD2;
 				};
 
 				//Vertex function
