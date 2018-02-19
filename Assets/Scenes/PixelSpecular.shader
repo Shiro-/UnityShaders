@@ -1,4 +1,6 @@
-﻿/*
+﻿// Upgrade NOTE: replaced 'mul(UNITY_MATRIX_MVP,*)' with 'UnityObjectToClipPos(*)'
+
+/*
 Reference to unitycookie/cgcookie for great tutorials on shader development
 */
 
@@ -62,7 +64,7 @@ Shader "PixelSpecular"
 
 				output.positionWorld = mul(unity_ObjectToWorld, v.vertex);
 				output.normalDir = normalize(mul(float4(v.normal, 0.0), unity_WorldToObject).xyz);
-				output.position = mul(UNITY_MATRIX_MVP, v.vertex);
+				output.position = UnityObjectToClipPos(v.vertex);
 
 				return output;
 

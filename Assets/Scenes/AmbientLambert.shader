@@ -1,4 +1,6 @@
-﻿/*
+﻿// Upgrade NOTE: replaced 'mul(UNITY_MATRIX_MVP,*)' with 'UnityObjectToClipPos(*)'
+
+/*
 Reference to unitycookie/cgcookie for great tutorials on shader development
 */
 
@@ -66,7 +68,7 @@ Shader "AmbientLambert"
 				float3 lightFinal = diffuseReflection + UNITY_LIGHTMODEL_AMBIENT.xyz;
 
 				output.color = float4(lightFinal * _Color.rgb, 1.0);
-				output.position = mul(UNITY_MATRIX_MVP, v.vertex);
+				output.position = UnityObjectToClipPos(v.vertex);
 				return output;
 			}
 

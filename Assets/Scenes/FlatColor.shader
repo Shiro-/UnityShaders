@@ -1,4 +1,6 @@
-﻿/*
+﻿// Upgrade NOTE: replaced 'mul(UNITY_MATRIX_MVP,*)' with 'UnityObjectToClipPos(*)'
+
+/*
 Reference to unitycookie/cgcookie for great tutorials on shader development
 */
 
@@ -46,7 +48,7 @@ Shader "FlatColor"
 				vertexOut output;
 				
 				//Process everything we need for vertices
-				output.position = mul(UNITY_MATRIX_MVP, v.vertex);
+				output.position = UnityObjectToClipPos(v.vertex);
 
 				return output;
 			}

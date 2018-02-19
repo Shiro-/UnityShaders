@@ -1,4 +1,6 @@
-﻿/*
+﻿// Upgrade NOTE: replaced 'mul(UNITY_MATRIX_MVP,*)' with 'UnityObjectToClipPos(*)'
+
+/*
 Reference to unitycookie/cgcookie for great tutorials on shader development
 */
 
@@ -61,7 +63,7 @@ Shader "PointLight"
 
 					o.positionWorld = mul(unity_ObjectToWorld, v.vertex);
 					o.normalDirection = normalize(mul(float4(v.normal, 0.0), unity_WorldToObject).xyz);
-					o.position = mul(UNITY_MATRIX_MVP, v.vertex);
+					o.position = UnityObjectToClipPos(v.vertex);
 
 					return o;
 				}
@@ -151,7 +153,7 @@ Shader "PointLight"
 		
 							o.positionWorld = mul(unity_ObjectToWorld, v.vertex);
 							o.normalDirection = normalize(mul(float4(v.normal, 0.0), unity_WorldToObject).xyz);
-							o.position = mul(UNITY_MATRIX_MVP, v.vertex);
+							o.position = UnityObjectToClipPos(v.vertex);
 
 							return o;
 						}
