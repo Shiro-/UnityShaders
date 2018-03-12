@@ -17,6 +17,7 @@ Shader "reStart/BaseShader"
 			float2 MainTex;
 		};
 
+		//https://docs.unity3d.com/Manual/SL-SurfaceShaders.html
 		fixed4 _Color;
 		fixed4 _Emission;
 		fixed4 _Normal;

@@ -9,6 +9,8 @@ This repository will serve as a learning environment for shader developement wit
 * https://cgcookie.com/archive/noob-to-pro-shader-writing-for-unity-4-beginner/
 * https://cgcookie.com/archive/noob-to-pro-shader-writing-for-unity-4-intermediate/
 
+* https://docs.unity3d.com/Manual/SL-SurfaceShaders.html
+
 # ACKNOWLEDGEMENTS
 
 The models added to this project were taken from the Three D Scans Project. They will be used to learn and explore different types of shaders through the Unity Engine. You can find information on the project through the links below:
